@@ -1,35 +1,242 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>2025年 中西家 激闘のログ</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>中西家 激闘のログ - 銀河MAX版</title>
+  <style>
+    @keyframes crawl {
+      0% { top: 100%; transform: translateY(0); }
+      100% { top: -800%; transform: translateY(-300px); }
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.5); }
+    }
+
+    @keyframes ufoFly {
+      0% { top: 10%; left: -10%; transform: rotate(5deg); }
+      50% { top: 30%; left: 110%; transform: rotate(-5deg); }
+      100% { top: 10%; left: -10%; transform: rotate(5deg); }
+    }
+
+    @keyframes popUp {
+      0% { transform: translateY(100%); opacity: 0; }
+      30% { transform: translateY(0); opacity: 1; }
+      70% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100%); opacity: 0; }
+    }
+
+    @keyframes flash {
+      0%, 100% { background-color: red; }
+      50% { background-color: orange; }
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black url('ginga.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Arial Black', Gadget, sans-serif;
+      color: yellow;
+    }
+
+    .star {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: url('star.png') no-repeat center center;
+      background-size: contain;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    .star:nth-child(1) { top: 20%; left: 70%; }
+    .star:nth-child(2) { top: 60%; left: 40%; }
+
+    .ufo {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: url('ufo.png') no-repeat center center;
+      background-size: contain;
+      animation: ufoFly 15s linear infinite;
+      z-index: 10;
+    }
+
+    .father {
+      position: absolute;
+      bottom: 0;
+      right: 5%;
+      width: 100px;
+      height: auto;
+      opacity: 0.85;
+      animation: popUp 10s ease-in-out infinite;
+    }
+
+    .crawl-container {
+      perspective: 100px;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .crawl {
+      position: absolute;
+      width: 80%;
+      left: 10%;
+      font-size: 2.5em;
+      text-align: center;
+      animation: crawl 47s linear forwards; margin-bottom: 200vh;
+      line-height: 1.8;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff0, 0 0 20px #f90;
+    }
+
+    .mission-box {
+      position: absolute;
+      top: 0.5em;
+      left: 0.5em;
+      background: rgba(255,0,0,0.8);
+      color: white;
+      padding: 1em;
+      font-size: 1em;
+      border: 3px solid yellow;
+      z-index: 100;
+      animation: flash 2s infinite;
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      background: rgba(0,0,0,0.8);
+      color: lime;
+      padding: 0.5em;
+      font-family: monospace;
+      font-size: 1em;
+      border: 1px solid lime;
+    }
+
+    .subtitle {
+      position: absolute;
+      bottom: 10%;
+      width: 100%;
+      text-align: center;
+      color: cyan;
+      font-size: 1.5em;
+      font-style: italic;
+      text-shadow: 0 0 10px black;
+      animation: popUp 15s ease-in-out infinite;
+    }
+
+    .player-box {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      color: white;
+      font-size: 0.9em;
+      background: rgba(0,0,0,0.7);
+      padding: 0.5em;
+      border: 1px solid white;
+      font-family: monospace;
+    }
+
+  
+    .father-giant {
+      position: absolute;
+      bottom: -100%;
+      left: 25%;
+      width: 100px;
+      height: auto;
+      opacity: 0;
+      z-index: 50;
+      animation: fatherGrow 10s ease-in 22s forwards;
+    }
+
+    @keyframes fatherGrow {
+  /* モバイル向け軽量化 */
+      0% { transform: scale(1); opacity: 0; bottom: -100%; }
+      50% { transform: scale(5); opacity: 1; bottom: 0%; }
+      100% { transform: scale(3); opacity: 0; bottom: 50%; }
+    }
+
+
+    @media (max-width: 768px) {
+      .crawl {
+        font-size: 1.5em;
+        animation-duration: 47s;
+      }
+      .mission-box, .status-bar, .player-box, .subtitle {
+        font-size: 0.8em;
+      }
+      .father, .father-giant {
+        width: 60px;
+      }
+      .ufo {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+</style>
 </head>
 <body>
-  <div id="background">
-    <img src="ginga.jpeg" id="bg-image">
-    <img src="ufo.png" class="ufo" id="ufo">
-    <img src="father.JPG" id="father">
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="ufo"></div>
+  <img src="father.JPG" class="father" alt="父" />
+  <img src="father.JPG" class="father-giant" alt="巨大父" />
+
+  <div class="mission-box">
+    <strong>MISSION:</strong><br>
+    風呂の蓋をする<br>
+    米を炊く<br>
+    冷蔵庫内の「謎」を倒せ
   </div>
 
-  <div id="overlay">
-    <h1 id="main-title">2025年 中西家 激闘のログ</h1>
-    <div id="log">
-      <!-- ログは script.js で流れる -->
+  <div class="status-bar">
+    🧔 父：HP 92%｜MP 14%<br>
+    🧺 洗濯進行率：138%<br>
+    🍚 炊飯器：スタンバイ完了
+  </div>
+
+  <div class="subtitle">父「今日の味噌汁は黒い」</div>
+  <div class="player-box">▶ 中西父：プレイヤー1</div>
+
+  <div class="crawl-container">
+    <div class="crawl">
+      <p>【序章】</p>
+      <p>この惑星が、まだ朝食という奇跡に包まれていた頃──<br>
+      中西家は、日常という名の小宇宙を、静かに、しかし確かにまわしていた。</p>
+      <p>だがある日、それは崩れ去った。<br>
+      突如として訪れた、“骨折”という運命のクエスト。</p>
+      <p>母は静かに倒れ、<br>
+      洗濯物は干されることなく、タオルは湿度を増していった。</p>
+      <p>【中盤】</p>
+      <p>傷ついた母に代わり、家族の運命は大きく揺らぎはじめる。</p>
+      <p>シンクには、“洗われる予定だった食器たち”が静かに眠り、<br>
+      洗濯カゴは、重力を超えて膨れ上がった。</p>
+      <p>誰も彼らを責めない。これは戦争なのだ。</p>
+      <p>【父の覚醒】</p>
+      <p>限界を超えし男、父。<br>
+      常にうるさい。<br>
+      家事？ してるかもしれんし、してないかもしれん。</p>
+      <p>だが確かなのは、彼が今日も何かと戦っているということ。</p>
+      <p>コメを炊く──それはもはや“儀式”である。</p>
+      <p>【終章】</p>
+      <p>東京にいる僕には、何もできない。<br>
+      こっちは雨かもしれないし、そっちは風が強いかもしれない。</p>
+      <p>それでも、僕の祈りだけは秒速マッハで届いてほしい。</p>
+      <p>この家が、どうにか回っているという事実。</p>
+      <p>それはもはや、神話である。</p>
+      <p>──2025年、中西家 激闘のログ──</p>
     </div>
   </div>
 
-  <div id="hud">
-    <div class="status">☕MISSION：コメを炊く</div>
-    <div class="status">💡ENERGY：残り17%</div>
-    <div class="status">📺REMOTE：行方不明</div>
-    <div class="status">🌀LAUNDRY：未処理 x2</div>
-    <div class="status blink">🚨ALERT：母骨折中</div>
-  </div>
-
-  <div id="stars"></div>
-
-  <script src="script.js"></script>
+  <marquee behavior="scroll" direction="left" scrollamount="7" style="position:fixed; bottom:0; width:100%; color:white; background:black; font-size:1.5em; z-index:999;">
+    ＼2025年 中西家 激闘のログ／　MISSION: 食器洗い → 謎の冷蔵庫 → 米炊き → 味噌汁が黒い問題 → 勝利セレモニー（風呂の蓋）
+  </marquee>
 </body>
+
 </html>
