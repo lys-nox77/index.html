@@ -143,22 +143,7 @@
     }
 
   
-    .father-giant {
-      position: absolute;
-      z-index: -1;
-      bottom: -100%;
-      left: 25%;
-      width: 100px;
-      height: auto;
-      opacity: 0;
-      z-index: 50;
-      animation: fatherGrow 10s ease-in 22s forwards;
-    }
-
-    @keyframes fatherGrow {
-  /* モバイル向け軽量化 */
-      0% { transform: scale(1); opacity: 0; bottom: -100%; }
-      50% { transform: scale(5); opacity: 1; bottom: 0%; }
+    50% { transform: scale(5); opacity: 1; bottom: 0%; }
       100% { transform: scale(3); opacity: 0; bottom: 50%; }
     }
 
@@ -166,15 +151,12 @@
     @media (max-width: 768px) {
       .crawl {
         font-size: 1.5em;
-        animation-duration: 47s;
+        animation-duration: 70s;
       }
       .mission-box, .status-bar, .player-box, .subtitle {
         font-size: 0.8em;
       }
-      .father, .father-giant {
-        width: 60px;
-      }
-      .ufo {
+      .father, .ufo {
         width: 50px;
         height: 50px;
       }
@@ -187,7 +169,6 @@
   <div class="star"></div>
   <div class="ufo"></div>
   <img src="father.JPG" class="father" alt="父" />
-  <img src="father.JPG" class="father-giant" alt="巨大父" />
 
   <div class="mission-box">
     <strong>MISSION:</strong><br>
