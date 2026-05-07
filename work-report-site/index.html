@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Report Generator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #667085;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #f59e0b;
+      --danger: #dc2626;
+      --ok: #059669;
+      --line: #d9e2ef;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #dbeafe 0, transparent 36%), var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    header {
+      padding: 48px 20px 28px;
+      text-align: center;
+    }
+
+    header p {
+      margin: 12px auto 0;
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      letter-spacing: -0.05em;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr);
+      gap: 20px;
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 48px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+
+    .card h2 { margin-top: 0; }
+
+    textarea {
+      width: 100%;
+      min-height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      resize: vertical;
+      font: 0.95rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 700;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary:hover { background: var(--primary-dark); }
+
+    .secondary {
+      background: #e0ecff;
+      color: #1e3a8a;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      padding: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.7rem;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .alert {
+      border-left: 5px solid var(--accent);
+      background: #fffbeb;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 10px 0;
+    }
+
+    .empty {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 18px;
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .project-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+    }
+
+    .project-row:last-child { border-bottom: 0; }
+
+    .slack {
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      color: #065f46;
+      border-radius: 16px;
+      padding: 14px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Work Report Generator</h1>
+    <p>CSVを貼るだけで、案件別の作業時間・アラート・Slackに貼れる要約をその場で作れます。インストール不要のブラウザ版です。</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 作業ログCSV</h2>
+      <p class="empty">必要な列: <code>date, member, project, hours, task</code></p>
+      <textarea id="csvInput" aria-label="作業ログCSV"></textarea>
+
+      <label for="reportDate">2. レポート日付</label>
+      <input id="reportDate" type="date" value="2026-05-07">
+
+      <div class="actions">
+        <button class="primary" id="generateButton">レポート生成</button>
+        <button class="secondary" id="sampleButton">サンプルCSVを入れる</button>
+        <button class="secondary" id="copyButton">Markdownをコピー</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 結果</h2>
+      <div id="summary" class="empty">CSVを入れて「レポート生成」を押すと、ここに結果が出ます。</div>
+      <h3>Slack投稿文</h3>
+      <div id="slackText" class="slack">まだ生成されていません</div>
+      <h3>Markdownレポート</h3>
+      <pre id="markdownOutput">まだ生成されていません</pre>
+    </section>
+  </main>
+
+  <script>
+    const sampleCsv = `date,member,project,hours,task
+2026-05-07,Alice,Alpha,3.5,仕様確認
+2026-05-07,Alice,Beta,2.0,資料作成
+2026-05-07,Bob,Alpha,4.5,実装
+2026-05-07,Carol,Gamma,6.0,顧客対応
+2026-05-07,Carol,Gamma,1.5,顧客対応
+2026-05-06,Alice,Alpha,2.0,設計`;
+
+    const csvInput = document.querySelector("#csvInput");
+    const reportDate = document.querySelector("#reportDate");
+    const summary = document.querySelector("#summary");
+    const slackText = document.querySelector("#slackText");
+    const markdownOutput = document.querySelector("#markdownOutput");
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/).filter(Boolean);
+      const headers = lines.shift().split(",").map((header) => header.trim());
+      return lines.map((line) => {
+        const values = line.split(",").map((value) => value.trim());
+        return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]));
+      });
+    }
+
+    function groupHoursByProject(rows) {
+      return rows.reduce((projects, row) => {
+        projects[row.project] = (projects[row.project] || 0) + Number(row.hours || 0);
+        return projects;
+      }, {});
+    }
+
+    function buildReport() {
+      const rows = parseCsv(csvInput.value);
+      const targetDate = reportDate.value;
+      const dayRows = rows.filter((row) => row.date === targetDate);
+
+      if (!dayRows.length) {
+        summary.innerHTML = `<p class="empty">${targetDate} のデータがありません。</p>`;
+        slackText.textContent = "対象日のデータがありません";
+        markdownOutput.textContent = "対象日のデータがありません";
+        return;
+      }
+
+      const totalHours = dayRows.reduce((total, row) => total + Number(row.hours || 0), 0);
+      const members = new Set(dayRows.map((row) => row.member));
+      const projects = groupHoursByProject(dayRows);
+      const projectRows = Object.entries(projects).sort((a, b) => b[1] - a[1]);
+      const alerts = [];
+
+      if (dayRows.some((row) => Number(row.hours) > 10)) alerts.push("10時間超の作業ログがあります");
+      if (dayRows.some((row) => !row.task)) alerts.push("taskが空の行があります");
+
+      summary.innerHTML = `
+        <div class="stats">
+          <div class="stat"><strong>${totalHours.toFixed(1)}h</strong><span>合計工数</span></div>
+          <div class="stat"><strong>${projectRows.length}</strong><span>案件数</span></div>
+          <div class="stat"><strong>${members.size}</strong><span>担当者数</span></div>
+        </div>
+        <h3>案件別</h3>
+        ${projectRows.map(([project, hours]) => `<div class="project-row"><span>${project}</span><strong>${hours.toFixed(1)}h</strong></div>`).join("")}
+        <h3>アラート</h3>
+        ${alerts.length ? alerts.map((alert) => `<div class="alert">${alert}</div>`).join("") : `<p class="empty">アラートはありません。</p>`}
+      `;
+
+      const slack = `[日報 ${targetDate}] 合計 ${totalHours.toFixed(1)}h / 案件 ${projectRows.length}件 / 最大: ${projectRows[0][0]} ${projectRows[0][1].toFixed(1)}h`;
+      slackText.textContent = slack;
+      markdownOutput.textContent = `# Daily Report (${targetDate})
+
+## Summary
+- Total hours: ${totalHours.toFixed(1)}h
+- Project count: ${projectRows.length}
+- Member count: ${members.size}
+
+## Hours by project
+${projectRows.map(([project, hours]) => `- ${project}: ${hours.toFixed(1)}h`).join("\n")}
+
+## Alerts
+${alerts.length ? alerts.map((alert) => `- ${alert}`).join("\n") : "- No alerts"}
+
+## Slack
+${slack}`;
+    }
+
+    document.querySelector("#sampleButton").addEventListener("click", () => {
+      csvInput.value = sampleCsv;
+      buildReport();
+    });
+
+    document.querySelector("#generateButton").addEventListener("click", buildReport);
+
+    document.querySelector("#copyButton").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(markdownOutput.textContent);
+    });
+
+    csvInput.value = sampleCsv;
+    buildReport();
+  </script>
+</body>
+</html>
